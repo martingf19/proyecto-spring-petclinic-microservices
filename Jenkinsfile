@@ -9,14 +9,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/spring-petclinic/spring-petclinic-microservices.git'
+                git 'https://github.com/martingf19/proyecto-spring-petclinic-microservices.git'
             }
         }
 
         stage('Build') {
             steps {
                 script {
-                    def mvnHome = tool 'M3'
+                    def mvnHome = tool name: 'M3', type: 'hudson.tasks.Maven$MavenInstallation'
                     sh "${mvnHome}/bin/mvn clean package"
                 }
             }
@@ -67,4 +67,5 @@ pipeline {
         }
     }
 }
+
 

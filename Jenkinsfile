@@ -9,10 +9,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/martingf19/proyecto-spring-petclinic-microservices.git'
+                git branch: 'main', url: 'https://github.com/spring-petclinic/spring-petclinic-microservices.git'
             }
         }
 
+        
 
         stage('Build Docker Images') {
             steps {
@@ -59,5 +60,4 @@ pipeline {
         }
     }
 }
-
 

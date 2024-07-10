@@ -57,7 +57,6 @@ pipeline {
                 }
             }
         }
-*/
 
         stage('Install Docker Compose') {
             steps {
@@ -73,6 +72,7 @@ pipeline {
             }
         }
     }
+*/
 
     post {
         always {

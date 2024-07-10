@@ -13,14 +13,6 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                script {
-                    def mvnHome = tool name: 'M3', type: 'hudson.tasks.Maven$MavenInstallation'
-                    sh "${mvnHome}/bin/mvn clean package"
-                }
-            }
-        }
 
         stage('Build Docker Images') {
             steps {

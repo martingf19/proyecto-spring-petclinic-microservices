@@ -142,3 +142,24 @@ services:
           memory: 256M
     ports:
     - 9091:9090
+
+  ## Jenkins
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    ports:
+     - 8085:8080
+     - 50000:50000
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - jenkins_home:/var/jenkins_home
+
+volumes:
+  jenkins_home:

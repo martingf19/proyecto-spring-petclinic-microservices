@@ -12,7 +12,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/spring-petclinic/spring-petclinic-microservices.git'
             }
         }
-
+/*
         stage('Build Docker Images') {
             steps {
                 script {
@@ -57,7 +57,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Deploy') {
             steps {
                 script {

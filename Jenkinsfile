@@ -13,18 +13,26 @@ pipeline {
             }
         }
 
-        
-
         stage('Build Docker Images') {
             steps {
                 script {
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/config-server", "./spring-petclinic-config-server")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/discovery-server", "./spring-petclinic-discovery-server")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/customers-service", "./spring-petclinic-customers-service")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/visits-service", "./spring-petclinic-visits-service")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/vets-service", "./spring-petclinic-vets-service")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/api-gateway", "./spring-petclinic-api-gateway")
-                    docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/admin-server", "./spring-petclinic-admin-server")
+                    def services = [
+                        'config-server',
+                        'discovery-server',
+                        'customers-service',
+                        'visits-service',
+                        'vets-service',
+                        'api-gateway',
+                        'admin-server'
+                    ]
+                    for (service in services) {
+                        def servicePath = "./spring-petclinic-${service}"
+                        if (fileExists("${servicePath}/Dockerfile")) {
+                            docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/${service}", servicePath)
+                        } else {
+                            error("Dockerfile not found in ${servicePath}")
+                        }
+                    }
                 }
             }
         }
@@ -33,13 +41,18 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/config-server"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/discovery-server"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/customers-service"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/visits-service"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/vets-service"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/api-gateway"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/admin-server"
+                        def services = [
+                            'config-server',
+                            'discovery-server',
+                            'customers-service',
+                            'visits-service',
+                            'vets-service',
+                            'api-gateway',
+                            'admin-server'
+                        ]
+                        for (service in services) {
+                            sh "docker push ${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/${service}"
+                        }
                     }
                 }
             }
@@ -60,4 +73,3 @@ pipeline {
         }
     }
 }
-

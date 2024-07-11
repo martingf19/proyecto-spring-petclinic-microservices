@@ -22,20 +22,6 @@ pipeline {
                 }
             }
         }
-        /* 
-        stage('Test') {
-            steps {
-                script {
-                    sh './mvnw test'
-                }
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                    jacoco execPattern: '**/target/jacoco.exec'
-                }
-            }
-        }*/
 
         stage('Build Docker Images') {
             steps {

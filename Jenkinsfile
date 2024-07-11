@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PATH = "PATH = "C:/Program Files/Docker/Docker/resources/bin:$PATH""
+        PATH = "C:/Program Files/Docker/Docker/resources/bin:"
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         GIT_REPO_URL = 'https://github.com/spring-petclinic/spring-petclinic-microservices'
         GIT_BRANCH = 'main'
@@ -24,10 +24,27 @@ pipeline {
             }
         }
 
+        
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh 'docker-compose build'
+                    def services = [
+                        'config-server',
+                        'discovery-server',
+                        'customers-service',
+                        'visits-service',
+                        'vets-service',
+                        'api-gateway',
+                        'admin-server'
+                    ]
+                    for (service in services) {
+                        def servicePath = "./spring-petclinic-${service}"
+                        if (fileExists("${servicePath}/Dockerfile")) {
+                            docker.build("${env.DOCKER_REGISTRY}/${env.IMAGE_NAME}/${service}", servicePath)
+                        } else {
+                            error("Dockerfile not found in ${servicePath}")
+                        }
+                    }
                 }
             }
         }

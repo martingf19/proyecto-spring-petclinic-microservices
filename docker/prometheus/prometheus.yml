@@ -30,3 +30,7 @@ scrape_configs:
   metrics_path: /actuator/prometheus
   static_configs:
   - targets: ['vets-service:8083']
+
+- job_name: 'node_exporter'
+  static_configs:
+    - targets: ['localhost:9100'] # Ajusta según sea necesario

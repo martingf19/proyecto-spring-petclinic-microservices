@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/local/bin:$PATH"
+        PATH = "PATH = "C:/Program Files/Docker/Docker/resources/bin:$PATH""
         DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
         GIT_REPO_URL = 'https://github.com/spring-petclinic/spring-petclinic-microservices'
         GIT_BRANCH = 'main'

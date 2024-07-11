@@ -2,6 +2,84 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_CREDENTIALS_ID = 'docker-credentials-id'
+        GIT_REPO_URL = 'https://github.com/spring-petclinic/spring-petclinic-microservices'
+        GIT_BRANCH = 'main'
+        DOCKER_REGISTRY = 'your-docker-registry'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO_URL}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh './mvnw clean install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh './mvnw test'
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                    jacoco execPattern: '**/target/jacoco.exec'
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
+                        sh 'docker-compose push'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            mail to: 'you@example.com',
+                 subject: "Pipeline failed: ${currentBuild.fullDisplayName}",
+                 body: "Something went wrong with the build. Please check the Jenkins job."
+        }
+    }
+}
+
+
+
+/*pipeline {
+    agent any
+
+    environment {
         DOCKER_REGISTRY = 'mydockerhubaccount'
         IMAGE_NAME = 'spring-petclinic'
     }
@@ -12,7 +90,16 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/spring-petclinic/spring-petclinic-microservices.git'
             }
         }
-/*
+
+        stage('Build') {
+            steps {
+                script {
+                    def mvnHome = tool 'M3'
+                    sh "${mvnHome}/bin/mvn clean package"
+                }
+            }
+        }   
+
         stage('Build Docker Images') {
             steps {
                 script {
@@ -72,11 +159,12 @@ pipeline {
             }
         }
    
-*/
- }
+
+ 
     post {
         always {
             cleanWs()
         }
     }
 }
+*/

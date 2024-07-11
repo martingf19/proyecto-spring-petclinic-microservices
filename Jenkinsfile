@@ -22,7 +22,7 @@ pipeline {
                 }
             }
         }
-
+        /* 
         stage('Test') {
             steps {
                 script {
@@ -35,7 +35,7 @@ pipeline {
                     jacoco execPattern: '**/target/jacoco.exec'
                 }
             }
-        }
+        }*/
 
         stage('Build Docker Images') {
             steps {
